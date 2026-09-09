@@ -203,13 +203,109 @@ select:focus, input:focus, textarea:focus { border-color: var(--accent-orange); 
 /* --- FIN DE NUEVOS ESTILOS --- */
 
 .adequacy-summary .target-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-.adequacy-summary .target-label { flex-basis: 50%; }
-.adequacy-summary .target-value { font-weight: bold; }
-.adequacy-percent { font-weight: bold; padding: 3px 8px; border-radius: 4px; color: white; font-size: 0.9em; min-width: 50px; text-align: center; }
+.adequacy-summary .target-label { flex-basis: 40%; font-size: 0.9em; }
+.adequacy-summary .target-value { font-weight: 600; font-size: 0.85em; color: var(--text-muted-light); text-align: right; padding-right: 10px; }
+.adequacy-percent { font-weight: bold; padding: 3px 8px; border-radius: 4px; color: white; font-size: 0.85em; min-width: 65px; text-align: center; }
 .adequacy-ok { background-color: #28a745; }
 .adequacy-low { background-color: #ffc107; color: #212529; }
 .adequacy-high { background-color: #dc3545; }
 .adequacy-na { background-color: #6c757d; }
+
+/* --- ESTILOS DE CONFIGURACIÓN FLEXIBLE DE MACRONUTRIENTES --- */
+.macro-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+    margin-bottom: 20px;
+}
+.macro-card {
+    background: var(--glass-bg-darker);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.macro-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--glass-border);
+    padding-bottom: 8px;
+}
+.macro-card-header h4 {
+    margin: 0;
+    color: var(--accent-teal);
+    font-size: 1.05em;
+    font-weight: 600;
+}
+.macro-card-badge {
+    font-size: 0.75em;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: rgba(232, 122, 61, 0.2);
+    color: var(--accent-orange);
+    font-weight: 600;
+}
+.macro-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.macro-row label {
+    font-size: 0.8em;
+    color: var(--text-muted-light);
+    font-weight: 500;
+}
+.macro-row select, .macro-row input {
+    padding: 7px 10px;
+    font-size: 0.85em;
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.35);
+    border: 1px solid var(--glass-border);
+    color: var(--text-light);
+    width: 100%;
+    box-sizing: border-box;
+}
+.macro-row select:focus, .macro-row input:focus {
+    box-shadow: 0 0 0 2px rgba(76, 154, 155, 0.5);
+    outline: none;
+}
+.macro-inputs-inline {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.macro-inputs-inline input {
+    flex: 1;
+    min-width: 0;
+}
+.macro-inputs-inline span {
+    font-size: 0.85em;
+    color: var(--text-muted-light);
+    font-weight: 500;
+}
+.macro-live-calc {
+    font-size: 0.8em;
+    color: var(--text-light);
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 4px;
+    padding: 6px 8px;
+    border-left: 3px solid var(--accent-teal);
+    margin-top: 4px;
+    line-height: 1.4;
+}
+#detailed-food-table tfoot th {
+    background-color: var(--glass-bg-darker);
+    border-top: 2px solid var(--accent-orange);
+    color: var(--accent-teal);
+    font-weight: 700;
+    font-size: 0.95em;
+    padding: 10px 8px;
+}
     </style>
     <!-- === FIN DEL CSS EMBEBIDO (de style.css) === -->
 
@@ -381,9 +477,14 @@ select:focus, input:focus, textarea:focus { border-color: var(--accent-orange); 
         <!-- Step 2 -->
         <div class="wizard-step">
             <div class="goal-setting">
-                <div class="section-title-styled">2) Gasto Energético Total - GET (kcal)</div>
+                <div class="section-title-styled">2) Gasto Energético Total - GET (kcal) y Peso</div>
                 <div class="input-group">
+                    <label for="tdee-input">GET Objetivo (kcal):</label>
                     <input type="number" id="tdee-input" min="0" step="10" placeholder="Ej: 2000">
+                </div>
+                <div class="input-group" style="margin-top: 15px;">
+                    <label for="patient-weight-input">Peso Corporal (kg) <small style="color:var(--text-muted-light);">(Opcional, para cálculo en g/kg)</small>:</label>
+                    <input type="number" id="patient-weight-input" min="0" step="0.1" placeholder="Ej: 60.0">
                 </div>
                 <div class="dri-link-container">
                     <a href="https://www.nal.usda.gov/human-nutrition-and-food-safety/dri-calculator" target="_blank" class="dri-link">Usar Calculadora DRI</a>
@@ -394,15 +495,144 @@ select:focus, input:focus, textarea:focus { border-color: var(--accent-orange); 
         <!-- Step 3 -->
         <div class="wizard-step">
             <div class="goal-setting">
-                <div class="section-title-styled">3) Requerimiento de Macronutrientes (AMDR) - Formula Calórica</div>
-                <label>AMDR (%):</label>
-                <div class="goal-inputs">
-                    <div><label for="carb-percent-input">HC</label><input type="number" id="carb-percent-input" min="0" max="100" step="1" placeholder="%"></div>
-                    <div><label for="protein-percent-input">P</label><input type="number" id="protein-percent-input" min="0" max="100" step="1" placeholder="%"></div>
-                    <div><label for="fat-percent-input">G</label><input type="number" id="fat-percent-input" min="0" max="100" step="1" placeholder="%"></div>
+                <div class="section-title-styled">3) Requerimiento de Macronutrientes - Adecuación Personalizada</div>
+                <p style="font-size: 0.85em; color: var(--text-muted-light); margin-top: -5px; margin-bottom: 15px;">
+                    Configura cada macronutriente de forma individual: por <strong>porcentaje (%) con rangos</strong> o por <strong>gramos (g o g/kg con condiciones ≥, ≤ o rangos)</strong>.
+                </p>
+
+                <div class="macro-cards-grid">
+                    <!-- Card Carbohidratos -->
+                    <div class="macro-card" id="card-carb">
+                        <div class="macro-card-header">
+                            <h4>Carbohidratos (HC)</h4>
+                            <span class="macro-card-badge">4 kcal/g</span>
+                        </div>
+                        <div class="macro-row">
+                            <label for="carb-unit-select">Unidad de Medida:</label>
+                            <select id="carb-unit-select" class="macro-unit-select" data-macro="carb">
+                                <option value="percent" selected>% del GET</option>
+                                <option value="grams">Gramos Totales (g)</option>
+                                <option value="g_kg">g / kg de Peso</option>
+                            </select>
+                        </div>
+                        <div class="macro-row" id="carb-mode-row">
+                            <label for="carb-mode-select">Modalidad / Criterio:</label>
+                            <select id="carb-mode-select" class="macro-mode-select" data-macro="carb">
+                                <option value="range" selected>Entre Mín y Máx (%)</option>
+                                <option value="fixed">Valor Fijo (%)</option>
+                            </select>
+                        </div>
+                        <div class="macro-row" id="carb-inputs-row">
+                            <label>Valores Objetivo:</label>
+                            <div class="macro-inputs-inline" id="carb-inputs-container">
+                                <input type="number" id="carb-min-input" min="0" max="100" step="0.5" placeholder="Mín %" value="50">
+                                <span>a</span>
+                                <input type="number" id="carb-max-input" min="0" max="100" step="0.5" placeholder="Máx %" value="60">
+                            </div>
+                        </div>
+                        <div class="macro-live-calc" id="carb-live-calc">Meta: 50 - 60%</div>
+                    </div>
+
+                    <!-- Card Proteínas -->
+                    <div class="macro-card" id="card-protein">
+                        <div class="macro-card-header">
+                            <h4>Proteínas (P)</h4>
+                            <span class="macro-card-badge">4 kcal/g</span>
+                        </div>
+                        <div class="macro-row">
+                            <label for="protein-unit-select">Unidad de Medida:</label>
+                            <select id="protein-unit-select" class="macro-unit-select" data-macro="protein">
+                                <option value="percent" selected>% del GET</option>
+                                <option value="grams">Gramos Totales (g)</option>
+                                <option value="g_kg">g / kg de Peso</option>
+                            </select>
+                        </div>
+                        <div class="macro-row" id="protein-mode-row">
+                            <label for="protein-mode-select">Modalidad / Criterio:</label>
+                            <select id="protein-mode-select" class="macro-mode-select" data-macro="protein">
+                                <option value="range" selected>Entre Mín y Máx (%)</option>
+                                <option value="fixed">Valor Fijo (%)</option>
+                            </select>
+                        </div>
+                        <div class="macro-row" id="protein-inputs-row">
+                            <label>Valores Objetivo:</label>
+                            <div class="macro-inputs-inline" id="protein-inputs-container">
+                                <input type="number" id="protein-min-input" min="0" max="100" step="0.5" placeholder="Mín %" value="10">
+                                <span>a</span>
+                                <input type="number" id="protein-max-input" min="0" max="100" step="0.5" placeholder="Máx %" value="20">
+                            </div>
+                        </div>
+                        <div class="macro-live-calc" id="protein-live-calc">Meta: 10 - 20%</div>
+                    </div>
+
+                    <!-- Card Grasas -->
+                    <div class="macro-card" id="card-fat">
+                        <div class="macro-card-header">
+                            <h4>Grasas / Lípidos (G)</h4>
+                            <span class="macro-card-badge">9 kcal/g</span>
+                        </div>
+                        <div class="macro-row">
+                            <label for="fat-unit-select">Unidad de Medida:</label>
+                            <select id="fat-unit-select" class="macro-unit-select" data-macro="fat">
+                                <option value="percent" selected>% del GET</option>
+                                <option value="grams">Gramos Totales (g)</option>
+                                <option value="g_kg">g / kg de Peso</option>
+                            </select>
+                        </div>
+                        <div class="macro-row" id="fat-mode-row">
+                            <label for="fat-mode-select">Modalidad / Criterio:</label>
+                            <select id="fat-mode-select" class="macro-mode-select" data-macro="fat">
+                                <option value="range" selected>Entre Mín y Máx (%)</option>
+                                <option value="fixed">Valor Fijo (%)</option>
+                            </select>
+                        </div>
+                        <div class="macro-row" id="fat-inputs-row">
+                            <label>Valores Objetivo:</label>
+                            <div class="macro-inputs-inline" id="fat-inputs-container">
+                                <input type="number" id="fat-min-input" min="0" max="100" step="0.5" placeholder="Mín %" value="25">
+                                <span>a</span>
+                                <input type="number" id="fat-max-input" min="0" max="100" step="0.5" placeholder="Máx %" value="30">
+                            </div>
+                        </div>
+                        <div class="macro-live-calc" id="fat-live-calc">Meta: 25 - 30%</div>
+                    </div>
                 </div>
+
                 <span id="percent-warning"></span>
-                <table class="amdr-results-table"><thead><tr><th>Macronutrientes</th><th>% AMDR</th><th>Calorías</th><th>Gramos</th></tr></thead><tbody><tr><td>HC</td><td id="amdr-hc-percent" class="value-col">0%</td><td id="amdr-hc-calories" class="value-col">0 Kcal</td><td id="amdr-hc-grams" class="value-col">0 g</td></tr><tr><td>P</td><td id="amdr-p-percent" class="value-col">0%</td><td id="amdr-p-calories" class="value-col">0 Kcal</td><td id="amdr-p-grams" class="value-col">0 g</td></tr><tr><td>G</td><td id="amdr-g-percent" class="value-col">0%</td><td id="amdr-g-calories" class="value-col">0 Kcal</td><td id="amdr-g-grams" class="value-col">0 g</td></tr></tbody></table>
+                <table class="amdr-results-table">
+                    <thead>
+                        <tr>
+                            <th>Macronutrientes</th>
+                            <th>Criterio / Unidad</th>
+                            <th>Objetivo</th>
+                            <th>Calorías (kcal)</th>
+                            <th>Gramos (g)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="amdr-results-tbody">
+                        <tr>
+                            <td><strong>Carbohidratos (HC)</strong></td>
+                            <td id="amdr-hc-unit" class="value-col">% del GET</td>
+                            <td id="amdr-hc-target" class="value-col">50 - 60%</td>
+                            <td id="amdr-hc-calories" class="value-col">1000 - 1200 Kcal</td>
+                            <td id="amdr-hc-grams" class="value-col">250.0 - 300.0 g</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Proteínas (P)</strong></td>
+                            <td id="amdr-p-unit" class="value-col">% del GET</td>
+                            <td id="amdr-p-target" class="value-col">10 - 20%</td>
+                            <td id="amdr-p-calories" class="value-col">200 - 400 Kcal</td>
+                            <td id="amdr-p-grams" class="value-col">50.0 - 100.0 g</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Grasas (G)</strong></td>
+                            <td id="amdr-g-unit" class="value-col">% del GET</td>
+                            <td id="amdr-g-target" class="value-col">25 - 30%</td>
+                            <td id="amdr-g-calories" class="value-col">500 - 600 Kcal</td>
+                            <td id="amdr-g-grams" class="value-col">55.6 - 66.7 g</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -450,7 +680,7 @@ select:focus, input:focus, textarea:focus { border-color: var(--accent-orange); 
                     <button id="add-button">Añadir Alimento</button>
                     <button id="undo-button" disabled>Deshacer Último Añadido</button>
                 </div>
-                <div id="detailed-list-container"><div class="detailed-list-header"><h4>Alimentos Añadidos</h4><div class="header-buttons"><button id="print-pdf-button">Imprimir Lista</button><button class="expand-toggle" id="detailed-list-toggle" data-target-list="detailed-table-wrapper" aria-expanded="false" aria-controls="detailed-table-wrapper" title="Expandir/Colapsar lista">⊞</button></div></div><div id="detailed-table-wrapper"><table id="detailed-food-table"><thead><tr><th>Alimento</th><th>gramos</th><th>Hc</th><th>P</th><th>G</th><th>Fibra</th><th>Colest</th><th>G.Sat</th><th>Sodio</th><th>Vit C</th><th>Hierro</th><th>Calcio</th><th class="actions-column">Acciones</th></tr></thead><tbody id="detailed-food-list-body"><tr class="empty-message-row"><td colspan="13">Aún no hay alimentos añadidos.</td></tr></tbody></table></div></div>
+                <div id="detailed-list-container"><div class="detailed-list-header"><h4>Alimentos Añadidos</h4><div class="header-buttons"><button id="print-pdf-button">Imprimir Lista</button><button class="expand-toggle" id="detailed-list-toggle" data-target-list="detailed-table-wrapper" aria-expanded="false" aria-controls="detailed-table-wrapper" title="Expandir/Colapsar lista">⊞</button></div></div><div id="detailed-table-wrapper"><table id="detailed-food-table"><thead><tr><th>Alimento</th><th>gramos</th><th>Hc</th><th>P</th><th>G</th><th>Fibra</th><th>Colest</th><th>G.Sat</th><th>Sodio</th><th>Vit C</th><th>Hierro</th><th>Calcio</th><th class="actions-column">Acciones</th></tr></thead><tbody id="detailed-food-list-body"><tr class="empty-message-row"><td colspan="13">Aún no hay alimentos añadidos.</td></tr></tbody><tfoot id="detailed-food-table-foot" style="display:none;"><tr class="total-row"><th>TOTALES</th><th id="total-col-g">0.0</th><th id="total-col-hc">0.0</th><th id="total-col-p">0.0</th><th id="total-col-g-lip">0.0</th><th id="total-col-fib">0.0</th><th id="total-col-col">0</th><th id="total-col-sat">0.0</th><th id="total-col-sod">0</th><th id="total-col-vitc">0.0</th><th id="total-col-fe">0.0</th><th id="total-col-ca">0</th><th>—</th></tr></tfoot></table></div></div>
             </div>
         </div>
         
@@ -569,20 +799,16 @@ document.addEventListener('DOMContentLoaded', () => {
     let totalHco = 0, totalProteinas = 0, totalLipidos = 0, totalCalorias = 0,
         totalFibra = 0, totalVitC = 0, totalHierro = 0, totalCalcio = 0,
         totalAGS = 0, totalColesterol = 0, totalSodio = 0;
-    let targetGET = 0, targetProteinPercent = 0, targetCarbPercent = 0, targetFatPercent = 0;
-    let targetProteinGrams = 0, targetCarbGrams = 0, targetFatGrams = 0;
-    let goalFibra = 25, goalVitC = 75, goalHierro = 18, goalCalcio = 1000,
-        limitAGS = 20, limitColesterol = 300, limitSodio = 2300;
-    let mealImages = {};
-    mealTypes.forEach(type => mealImages[type] = null);
-    
+    const macroState = {
+        carb: { unit: 'percent', mode: 'range', min: 50, max: 60, val: 55 },
+        protein: { unit: 'percent', mode: 'range', min: 10, max: 20, val: 15 },
+        fat: { unit: 'percent', mode: 'range', min: 25, max: 30, val: 25 }
+    };
+
     let groupNumberInput, foodInput, foodDatalist, quantityInput, mealTypeSelect,
         addButton, undoButton, saveAllPdfButton, printPdfButton, errorMessageDiv,
-        planPurposeInput, tdeeInput, proteinPercentInput, carbPercentInput,
-        fatPercentInput, percentWarningSpan, amdrHcPercentSpan, amdrHcCaloriesSpan,
-        amdrHcGramsSpan, amdrPPercentSpan, amdrPCaloriesSpan, amdrPGramsSpan,
-        amdrGPercentSpan, amdrGCaloriesSpan, amdrGGramsSpan, fibraGoalInput,
-        vitcGoalInput, hierroGoalInput, calcioGoalInput, sodioLimitInput,
+        planPurposeInput, tdeeInput, patientWeightInput, percentWarningSpan,
+        fibraGoalInput, vitcGoalInput, hierroGoalInput, calcioGoalInput, sodioLimitInput,
         colesterolLimitInput, agsLimitInput, caracteresDistribucionInput,
         caracteresTemperaturaInput, caracteresConsistenciaInput, caracteresVolumenInput,
         caracteresFibraInput, caracteresVitaminasInput, caracteresLiquidoInput,
@@ -594,10 +820,206 @@ document.addEventListener('DOMContentLoaded', () => {
         progressBarVitC, progressTextVitC, progressBarHierro, progressTextHierro,
         progressBarCalcio, progressTextCalcio, progressBarAGS, progressTextAGS,
         progressBarColesterol, progressTextColesterol, progressBarSodio, progressTextSodio,
-        detailedListBody, prepTextareaMap;
+        detailedListBody, detailedFoodTableFoot, totalColG, totalColHc, totalColP, totalColGLip,
+        totalColFib, totalColCol, totalColSat, totalColSod, totalColVitc, totalColFe, totalColCa,
+        amdrHcUnitSpan, amdrHcTargetSpan, amdrHcCaloriesSpan, amdrHcGramsSpan,
+        amdrPUnitSpan, amdrPTargetSpan, amdrPCaloriesSpan, amdrPGramsSpan,
+        amdrGUnitSpan, amdrGTargetSpan, amdrGCaloriesSpan, amdrGGramsSpan,
+        prepTextareaMap;
     
     function cacheDOMElements() {
-        groupNumberInput = document.getElementById('group-number-input'); foodInput = document.getElementById('food-input'); foodDatalist = document.getElementById('food-datalist'); quantityInput = document.getElementById('quantity-input'); mealTypeSelect = document.getElementById('meal-type-select'); addButton = document.getElementById('add-button'); undoButton = document.getElementById('undo-button'); saveAllPdfButton = document.getElementById('save-all-pdf-button'); printPdfButton = document.getElementById('print-pdf-button'); errorMessageDiv = document.getElementById('error-message'); planPurposeInput = document.getElementById('plan-purpose-input'); tdeeInput = document.getElementById('tdee-input'); proteinPercentInput = document.getElementById('protein-percent-input'); carbPercentInput = document.getElementById('carb-percent-input'); fatPercentInput = document.getElementById('fat-percent-input'); percentWarningSpan = document.getElementById('percent-warning'); amdrHcPercentSpan = document.getElementById('amdr-hc-percent'); amdrHcCaloriesSpan = document.getElementById('amdr-hc-calories'); amdrHcGramsSpan = document.getElementById('amdr-hc-grams'); amdrPPercentSpan = document.getElementById('amdr-p-percent'); amdrPCaloriesSpan = document.getElementById('amdr-p-calories'); amdrPGramsSpan = document.getElementById('amdr-p-grams'); amdrGPercentSpan = document.getElementById('amdr-g-percent'); amdrGCaloriesSpan = document.getElementById('amdr-g-calories'); amdrGGramsSpan = document.getElementById('amdr-g-grams'); fibraGoalInput = document.getElementById('fibra-goal-input'); vitcGoalInput = document.getElementById('vitc-goal-input'); hierroGoalInput = document.getElementById('hierro-goal-input'); calcioGoalInput = document.getElementById('calcio-goal-input'); sodioLimitInput = document.getElementById('sodio-limit-input'); colesterolLimitInput = document.getElementById('colesterol-limit-input'); agsLimitInput = document.getElementById('ags-limit-input'); caracteresDistribucionInput = document.getElementById('caracteres-distribucion'); caracteresTemperaturaInput = document.getElementById('caracteres-temperatura'); caracteresConsistenciaInput = document.getElementById('caracteres-consistencia'); caracteresVolumenInput = document.getElementById('caracteres-volumen'); caracteresFibraInput = document.getElementById('caracteres-fibra'); caracteresVitaminasInput = document.getElementById('caracteres-vitaminas'); caracteresLiquidoInput = document.getElementById('caracteres-liquido'); interpretacionInput = document.getElementById('interpretacion-prescripcion'); prepDesayunoTextarea = document.getElementById('prep-desayuno'); prepColacionTextarea = document.getElementById('prep-colacion'); prepAlmuerzoTextarea = document.getElementById('prep-almuerzo'); prepMeriendaTextarea = document.getElementById('prep-merienda'); prepCenaTextarea = document.getElementById('prep-cena'); totalHcoSpan = document.getElementById('total-hco'); totalProteinasSpan = document.getElementById('total-proteinas'); totalLipidosSpan = document.getElementById('total-lipidos'); totalCaloriasSpan = document.getElementById('total-calorias'); targetCaloriasValSpan = document.getElementById('target-calorias-val'); targetProteinasValSpan = document.getElementById('target-proteinas-val'); targetCarbosValSpan = document.getElementById('target-carbos-val'); targetGrasasValSpan = document.getElementById('target-grasas-val'); adequacyCaloriasSpan = document.getElementById('adequacy-calorias'); adequacyProteinasSpan = document.getElementById('adequacy-proteinas'); adequacyCarbosSpan = document.getElementById('adequacy-carbos'); adequacyGrasasSpan = document.getElementById('adequacy-grasas'); progressBarFibra = document.getElementById('progress-bar-fibra'); progressTextFibra = document.getElementById('progress-text-fibra'); progressBarVitC = document.getElementById('progress-bar-vitc'); progressTextVitC = document.getElementById('progress-text-vitc'); progressBarHierro = document.getElementById('progress-bar-hierro'); progressTextHierro = document.getElementById('progress-text-hierro'); progressBarCalcio = document.getElementById('progress-bar-calcio'); progressTextCalcio = document.getElementById('progress-text-calcio'); progressBarAGS = document.getElementById('progress-bar-ags'); progressTextAGS = document.getElementById('progress-text-ags'); progressBarColesterol = document.getElementById('progress-bar-colesterol'); progressTextColesterol = document.getElementById('progress-text-colesterol'); progressBarSodio = document.getElementById('progress-bar-sodio'); progressTextSodio = document.getElementById('progress-text-sodio'); detailedListBody = document.getElementById('detailed-food-list-body'); prepTextareaMap = { "Desayuno": prepDesayunoTextarea, "Colación": prepColacionTextarea, "Almuerzo": prepAlmuerzoTextarea, "Merienda": prepMeriendaTextarea, "Cena": prepCenaTextarea };
+        groupNumberInput = document.getElementById('group-number-input');
+        foodInput = document.getElementById('food-input');
+        foodDatalist = document.getElementById('food-datalist');
+        quantityInput = document.getElementById('quantity-input');
+        mealTypeSelect = document.getElementById('meal-type-select');
+        addButton = document.getElementById('add-button');
+        undoButton = document.getElementById('undo-button');
+        saveAllPdfButton = document.getElementById('save-all-pdf-button');
+        printPdfButton = document.getElementById('print-pdf-button');
+        errorMessageDiv = document.getElementById('error-message');
+        planPurposeInput = document.getElementById('plan-purpose-input');
+        tdeeInput = document.getElementById('tdee-input');
+        patientWeightInput = document.getElementById('patient-weight-input');
+        percentWarningSpan = document.getElementById('percent-warning');
+
+        amdrHcUnitSpan = document.getElementById('amdr-hc-unit');
+        amdrHcTargetSpan = document.getElementById('amdr-hc-target');
+        amdrHcCaloriesSpan = document.getElementById('amdr-hc-calories');
+        amdrHcGramsSpan = document.getElementById('amdr-hc-grams');
+
+        amdrPUnitSpan = document.getElementById('amdr-p-unit');
+        amdrPTargetSpan = document.getElementById('amdr-p-target');
+        amdrPCaloriesSpan = document.getElementById('amdr-p-calories');
+        amdrPGramsSpan = document.getElementById('amdr-p-grams');
+
+        amdrGUnitSpan = document.getElementById('amdr-g-unit');
+        amdrGTargetSpan = document.getElementById('amdr-g-target');
+        amdrGCaloriesSpan = document.getElementById('amdr-g-calories');
+        amdrGGramsSpan = document.getElementById('amdr-g-grams');
+
+        fibraGoalInput = document.getElementById('fibra-goal-input');
+        vitcGoalInput = document.getElementById('vitc-goal-input');
+        hierroGoalInput = document.getElementById('hierro-goal-input');
+        calcioGoalInput = document.getElementById('calcio-goal-input');
+        sodioLimitInput = document.getElementById('sodio-limit-input');
+        colesterolLimitInput = document.getElementById('colesterol-limit-input');
+        agsLimitInput = document.getElementById('ags-limit-input');
+        caracteresDistribucionInput = document.getElementById('caracteres-distribucion');
+        caracteresTemperaturaInput = document.getElementById('caracteres-temperatura');
+        caracteresConsistenciaInput = document.getElementById('caracteres-consistencia');
+        caracteresVolumenInput = document.getElementById('caracteres-volumen');
+        caracteresFibraInput = document.getElementById('caracteres-fibra');
+        caracteresVitaminasInput = document.getElementById('caracteres-vitaminas');
+        caracteresLiquidoInput = document.getElementById('caracteres-liquido');
+        interpretacionInput = document.getElementById('interpretacion-prescripcion');
+        prepDesayunoTextarea = document.getElementById('prep-desayuno');
+        prepColacionTextarea = document.getElementById('prep-colacion');
+        prepAlmuerzoTextarea = document.getElementById('prep-almuerzo');
+        prepMeriendaTextarea = document.getElementById('prep-merienda');
+        prepCenaTextarea = document.getElementById('prep-cena');
+        totalHcoSpan = document.getElementById('total-hco');
+        totalProteinasSpan = document.getElementById('total-proteinas');
+        totalLipidosSpan = document.getElementById('total-lipidos');
+        totalCaloriasSpan = document.getElementById('total-calorias');
+        targetCaloriasValSpan = document.getElementById('target-calorias-val');
+        targetProteinasValSpan = document.getElementById('target-proteinas-val');
+        targetCarbosValSpan = document.getElementById('target-carbos-val');
+        targetGrasasValSpan = document.getElementById('target-grasas-val');
+        adequacyCaloriasSpan = document.getElementById('adequacy-calorias');
+        adequacyProteinasSpan = document.getElementById('adequacy-proteinas');
+        adequacyCarbosSpan = document.getElementById('adequacy-carbos');
+        adequacyGrasasSpan = document.getElementById('adequacy-grasas');
+        progressBarFibra = document.getElementById('progress-bar-fibra');
+        progressTextFibra = document.getElementById('progress-text-fibra');
+        progressBarVitC = document.getElementById('progress-bar-vitc');
+        progressTextVitC = document.getElementById('progress-text-vitc');
+        progressBarHierro = document.getElementById('progress-bar-hierro');
+        progressTextHierro = document.getElementById('progress-text-hierro');
+        progressBarCalcio = document.getElementById('progress-bar-calcio');
+        progressTextCalcio = document.getElementById('progress-text-calcio');
+        progressBarAGS = document.getElementById('progress-bar-ags');
+        progressTextAGS = document.getElementById('progress-text-ags');
+        progressBarColesterol = document.getElementById('progress-bar-colesterol');
+        progressTextColesterol = document.getElementById('progress-text-colesterol');
+        progressBarSodio = document.getElementById('progress-bar-sodio');
+        progressTextSodio = document.getElementById('progress-text-sodio');
+
+        detailedListBody = document.getElementById('detailed-food-list-body');
+        detailedFoodTableFoot = document.getElementById('detailed-food-table-foot');
+        totalColG = document.getElementById('total-col-g');
+        totalColHc = document.getElementById('total-col-hc');
+        totalColP = document.getElementById('total-col-p');
+        totalColGLip = document.getElementById('total-col-g-lip');
+        totalColFib = document.getElementById('total-col-fib');
+        totalColCol = document.getElementById('total-col-col');
+        totalColSat = document.getElementById('total-col-sat');
+        totalColSod = document.getElementById('total-col-sod');
+        totalColVitc = document.getElementById('total-col-vitc');
+        totalColFe = document.getElementById('total-col-fe');
+        totalColCa = document.getElementById('total-col-ca');
+
+        prepTextareaMap = {
+            "Desayuno": prepDesayunoTextarea,
+            "Colación": prepColacionTextarea,
+            "Almuerzo": prepAlmuerzoTextarea,
+            "Merienda": prepMeriendaTextarea,
+            "Cena": prepCenaTextarea
+        };
+    }
+
+    function setupMacroControls() {
+        ['carb', 'protein', 'fat'].forEach(macro => {
+            const unitSelect = document.getElementById(`${macro}-unit-select`);
+            const modeSelect = document.getElementById(`${macro}-mode-select`);
+            
+            unitSelect.addEventListener('change', () => {
+                macroState[macro].unit = unitSelect.value;
+                if (unitSelect.value === 'percent') {
+                    modeSelect.innerHTML = `
+                        <option value="range" selected>Entre Mín y Máx (%)</option>
+                        <option value="fixed">Valor Fijo (%)</option>
+                    `;
+                    macroState[macro].mode = 'range';
+                    if (macro === 'carb') { macroState[macro].min = 50; macroState[macro].max = 60; macroState[macro].val = 55; }
+                    else if (macro === 'protein') { macroState[macro].min = 10; macroState[macro].max = 20; macroState[macro].val = 15; }
+                    else { macroState[macro].min = 25; macroState[macro].max = 30; macroState[macro].val = 25; }
+                } else if (unitSelect.value === 'g_kg') {
+                    modeSelect.innerHTML = `
+                        <option value="gte" selected>≥ Mayor o igual que</option>
+                        <option value="range">Entre Mín y Máx</option>
+                        <option value="lte">≤ Menor o igual que</option>
+                        <option value="fixed">≈ Meta aproximada</option>
+                    `;
+                    macroState[macro].mode = 'gte';
+                    if (macro === 'carb') { macroState[macro].min = 3.0; macroState[macro].max = 5.0; macroState[macro].val = 4.0; }
+                    else if (macro === 'protein') { macroState[macro].min = 0.8; macroState[macro].max = 1.2; macroState[macro].val = 0.8; }
+                    else { macroState[macro].min = 0.8; macroState[macro].max = 1.2; macroState[macro].val = 1.0; }
+                } else {
+                    modeSelect.innerHTML = `
+                        <option value="gte" selected>≥ Mayor o igual que</option>
+                        <option value="range">Entre Mín y Máx</option>
+                        <option value="lte">≤ Menor o igual que</option>
+                        <option value="fixed">≈ Meta aproximada</option>
+                    `;
+                    macroState[macro].mode = 'gte';
+                    if (macro === 'carb') { macroState[macro].min = 200; macroState[macro].max = 300; macroState[macro].val = 250; }
+                    else if (macro === 'protein') { macroState[macro].min = 50; macroState[macro].max = 80; macroState[macro].val = 60; }
+                    else { macroState[macro].min = 50; macroState[macro].max = 70; macroState[macro].val = 60; }
+                }
+                renderMacroInputs(macro);
+                updateAllTargetsAndProgress();
+            });
+
+            modeSelect.addEventListener('change', () => {
+                macroState[macro].mode = modeSelect.value;
+                renderMacroInputs(macro);
+                updateAllTargetsAndProgress();
+            });
+
+            renderMacroInputs(macro);
+        });
+    }
+
+    function renderMacroInputs(macro) {
+        const container = document.getElementById(`${macro}-inputs-container`);
+        const state = macroState[macro];
+
+        if (state.unit === 'percent') {
+            if (state.mode === 'range') {
+                container.innerHTML = `
+                    <input type="number" id="${macro}-min-input" min="0" max="100" step="0.5" placeholder="Mín %" value="${state.min}">
+                    <span>a</span>
+                    <input type="number" id="${macro}-max-input" min="0" max="100" step="0.5" placeholder="Máx %" value="${state.max}">
+                `;
+            } else {
+                container.innerHTML = `
+                    <input type="number" id="${macro}-val-input" min="0" max="100" step="0.5" placeholder="% objetivo" value="${state.val}">
+                `;
+            }
+        } else {
+            const placeholder = state.unit === 'g_kg' ? (macro === 'protein' ? '0.8' : '1.0') : (macro === 'protein' ? '60' : '200');
+            if (state.mode === 'range') {
+                container.innerHTML = `
+                    <input type="number" id="${macro}-min-input" min="0" step="0.1" placeholder="Mín" value="${state.min}">
+                    <span>a</span>
+                    <input type="number" id="${macro}-max-input" min="0" step="0.1" placeholder="Máx" value="${state.max}">
+                `;
+            } else {
+                container.innerHTML = `
+                    <input type="number" id="${macro}-val-input" min="0" step="0.1" placeholder="Ej: ${placeholder}" value="${state.val}">
+                `;
+            }
+        }
+
+        container.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', () => {
+                if (input.id.includes('min')) state.min = parseFloat(input.value) || 0;
+                if (input.id.includes('max')) state.max = parseFloat(input.value) || 0;
+                if (input.id.includes('val')) state.val = parseFloat(input.value) || 0;
+                updateAllTargetsAndProgress();
+            });
+        });
     }
     
     function populateFoodDatalist() {
@@ -611,7 +1033,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function updateConsumedSummaryView() { totalHcoSpan.textContent = totalHco.toFixed(1); totalProteinasSpan.textContent = totalProteinas.toFixed(1); totalLipidosSpan.textContent = totalLipidos.toFixed(1); totalCaloriasSpan.textContent = Math.round(totalCalorias); }
+    function updateConsumedSummaryView() {
+        totalHcoSpan.textContent = totalHco.toFixed(1);
+        totalProteinasSpan.textContent = totalProteinas.toFixed(1);
+        totalLipidosSpan.textContent = totalLipidos.toFixed(1);
+        totalCaloriasSpan.textContent = Math.round(totalCalorias);
+    }
+
     function updateSpecificNutrientProgressView() {
         const updateProgress = (bar, text, consumed, target, unit, isLimit, precision) => {
             text.textContent = `${consumed.toFixed(precision)} / ${target.toFixed(precision)} ${unit}`;
@@ -628,6 +1056,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateProgress(progressBarColesterol, progressTextColesterol, totalColesterol, limitColesterol, 'mg', true, 0);
         updateProgress(progressBarSodio, progressTextSodio, totalSodio, limitSodio, 'mg', true, 0);
     }
+
     function displayError(message) { errorMessageDiv.textContent = message; }
     function clearError() { errorMessageDiv.textContent = ""; }
     function updateUndoButtonState() { undoButton.disabled = additionHistory.length === 0; }
@@ -656,6 +1085,7 @@ document.addEventListener('DOMContentLoaded', () => {
         detailedListBody.innerHTML = '';
         if (additionHistory.length === 0) {
             detailedListBody.innerHTML = '<tr class="empty-message-row"><td colspan="13">Aún no hay alimentos añadidos.</td></tr>';
+            if (detailedFoodTableFoot) detailedFoodTableFoot.style.display = 'none';
         } else {
             additionHistory.forEach((item, index) => {
                 const row = document.createElement('tr');
@@ -671,48 +1101,261 @@ document.addEventListener('DOMContentLoaded', () => {
                     </td>`;
                 detailedListBody.appendChild(row);
             });
+
+            if (detailedFoodTableFoot) {
+                detailedFoodTableFoot.style.display = '';
+                const totalGramos = additionHistory.reduce((sum, item) => sum + item.cantidad, 0);
+                totalColG.textContent = totalGramos.toFixed(1);
+                totalColHc.textContent = totalHco.toFixed(1);
+                totalColP.textContent = totalProteinas.toFixed(1);
+                totalColGLip.textContent = totalLipidos.toFixed(1);
+                totalColFib.textContent = totalFibra.toFixed(1);
+                totalColCol.textContent = Math.round(totalColesterol);
+                totalColSat.textContent = totalAGS.toFixed(1);
+                totalColSod.textContent = Math.round(totalSodio);
+                totalColVitc.textContent = totalVitC.toFixed(1);
+                totalColFe.textContent = totalHierro.toFixed(1);
+                totalColCa.textContent = Math.round(totalCalcio);
+            }
         }
     }
 
     function calculateAndUpdateTargets() {
         targetGET = parseFloat(tdeeInput.value) || 0;
-        const cP = parseFloat(carbPercentInput.value) || 0, pP = parseFloat(proteinPercentInput.value) || 0, fP = parseFloat(fatPercentInput.value) || 0;
-        const totalP = cP + pP + fP;
-        percentWarningSpan.textContent = (targetGET > 0 && Math.round(totalP) !== 100 && totalP > 0) ? `Suma: ${Math.round(totalP)}%, debería ser 100%.` : "";
-        const cKcal = targetGET * (cP / 100), pKcal = targetGET * (pP / 100), fKcal = targetGET * (fP / 100);
-        targetCarbGrams = targetGET > 0 ? cKcal / KCAL_PER_G.hco : 0;
-        targetProteinGrams = targetGET > 0 ? pKcal / KCAL_PER_G.proteinas : 0;
-        targetFatGrams = targetGET > 0 ? fKcal / KCAL_PER_G.lipidos : 0;
-        amdrHcPercentSpan.textContent = `${cP.toFixed(0)}%`; amdrHcCaloriesSpan.textContent = `${Math.round(cKcal)} Kcal`; amdrHcGramsSpan.textContent = `${targetCarbGrams.toFixed(1)} g`;
-        amdrPPercentSpan.textContent = `${pP.toFixed(0)}%`; amdrPCaloriesSpan.textContent = `${Math.round(pKcal)} Kcal`; amdrPGramsSpan.textContent = `${targetProteinGrams.toFixed(1)} g`;
-        amdrGPercentSpan.textContent = `${fP.toFixed(0)}%`; amdrGCaloriesSpan.textContent = `${Math.round(fKcal)} Kcal`; amdrGGramsSpan.textContent = `${targetFatGrams.toFixed(1)} g`;
-        targetCaloriasValSpan.textContent = Math.round(targetGET);
-        targetProteinasValSpan.textContent = targetProteinGrams.toFixed(1);
-        targetCarbosValSpan.textContent = targetCarbGrams.toFixed(1);
-        targetGrasasValSpan.textContent = targetFatGrams.toFixed(1);
+        const weight = parseFloat(patientWeightInput?.value) || 0;
+
+        const macroKeys = [
+            { key: 'carb', factor: 4, name: 'HC', live: document.getElementById('carb-live-calc'), unitSpan: amdrHcUnitSpan, targetSpan: amdrHcTargetSpan, calSpan: amdrHcCaloriesSpan, gSpan: amdrHcGramsSpan },
+            { key: 'protein', factor: 4, name: 'P', live: document.getElementById('protein-live-calc'), unitSpan: amdrPUnitSpan, targetSpan: amdrPTargetSpan, calSpan: amdrPCaloriesSpan, gSpan: amdrPGramsSpan },
+            { key: 'fat', factor: 9, name: 'G', live: document.getElementById('fat-live-calc'), unitSpan: amdrGUnitSpan, targetSpan: amdrGTargetSpan, calSpan: amdrGCaloriesSpan, gSpan: amdrGGramsSpan }
+        ];
+
+        macroKeys.forEach(m => {
+            const st = macroState[m.key];
+            let targetLabel = "";
+            let calText = "N/A";
+            let gText = "N/A";
+            let unitLabel = st.unit === 'percent' ? '% del GET' : (st.unit === 'g_kg' ? 'g / kg peso' : 'Gramos totales (g)');
+
+            if (st.unit === 'percent') {
+                if (st.mode === 'range') {
+                    targetLabel = `${st.min} - ${st.max}%`;
+                    if (targetGET > 0) {
+                        const minCal = targetGET * (st.min / 100);
+                        const maxCal = targetGET * (st.max / 100);
+                        const minG = minCal / m.factor;
+                        const maxG = maxCal / m.factor;
+                        calText = `${Math.round(minCal)} - ${Math.round(maxCal)} Kcal`;
+                        gText = `${minG.toFixed(1)} - ${maxG.toFixed(1)} g`;
+                    }
+                } else {
+                    targetLabel = `${st.val}%`;
+                    if (targetGET > 0) {
+                        const cal = targetGET * (st.val / 100);
+                        const g = cal / m.factor;
+                        calText = `${Math.round(cal)} Kcal`;
+                        gText = `${g.toFixed(1)} g`;
+                    }
+                }
+            } else {
+                const mult = (st.unit === 'g_kg' && weight > 0) ? weight : 1;
+                const weightNote = (st.unit === 'g_kg' && weight > 0) ? ` (${weight} kg)` : '';
+                const minG = st.min * mult;
+                const maxG = st.max * mult;
+                const valG = st.val * mult;
+
+                if (st.mode === 'gte') {
+                    targetLabel = st.unit === 'g_kg' ? `≥ ${st.val} g/kg${weightNote}` : `≥ ${valG.toFixed(1)} g`;
+                    const cal = valG * m.factor;
+                    calText = `≥ ${Math.round(cal)} Kcal`;
+                    gText = `≥ ${valG.toFixed(1)} g`;
+                } else if (st.mode === 'lte') {
+                    targetLabel = st.unit === 'g_kg' ? `≤ ${st.val} g/kg${weightNote}` : `≤ ${valG.toFixed(1)} g`;
+                    const cal = valG * m.factor;
+                    calText = `≤ ${Math.round(cal)} Kcal`;
+                    gText = `≤ ${valG.toFixed(1)} g`;
+                } else if (st.mode === 'range') {
+                    targetLabel = st.unit === 'g_kg' ? `${st.min} - ${st.max} g/kg${weightNote}` : `${minG.toFixed(1)} - ${maxG.toFixed(1)} g`;
+                    const minCal = minG * m.factor;
+                    const maxCal = maxG * m.factor;
+                    calText = `${Math.round(minCal)} - ${Math.round(maxCal)} Kcal`;
+                    gText = `${minG.toFixed(1)} - ${maxG.toFixed(1)} g`;
+                } else {
+                    targetLabel = st.unit === 'g_kg' ? `≈ ${st.val} g/kg${weightNote}` : `≈ ${valG.toFixed(1)} g`;
+                    const cal = valG * m.factor;
+                    calText = `${Math.round(cal)} Kcal`;
+                    gText = `${valG.toFixed(1)} g`;
+                }
+            }
+
+            if (m.live) m.live.textContent = `Objetivo: ${targetLabel} | ${calText} | ${gText}`;
+            if (m.unitSpan) m.unitSpan.textContent = unitLabel;
+            if (m.targetSpan) m.targetSpan.textContent = targetLabel;
+            if (m.calSpan) m.calSpan.textContent = calText;
+            if (m.gSpan) m.gSpan.textContent = gText;
+        });
+
+        // Warnings
+        const allPercent = macroKeys.every(m => macroState[m.key].unit === 'percent');
+        if (allPercent) {
+            const allFixed = macroKeys.every(m => macroState[m.key].mode === 'fixed');
+            if (allFixed) {
+                const sum = macroState.carb.val + macroState.protein.val + macroState.fat.val;
+                percentWarningSpan.textContent = (targetGET > 0 && Math.round(sum) !== 100) ? `Suma de porcentajes: ${Math.round(sum)}% (debería ser 100%).` : "";
+            } else {
+                percentWarningSpan.textContent = "";
+            }
+        } else {
+            percentWarningSpan.textContent = "";
+        }
     }
     
     function readNutrientGoals() {
-        goalFibra = parseFloat(fibraGoalInput.value) || 0; goalVitC = parseFloat(vitcGoalInput.value) || 0; goalHierro = parseFloat(hierroGoalInput.value) || 0; goalCalcio = parseFloat(calcioGoalInput.value) || 0;
-        limitAGS = parseFloat(agsLimitInput.value) || 0; limitColesterol = parseFloat(colesterolLimitInput.value) || 0; limitSodio = parseFloat(sodioLimitInput.value) || 0;
+        goalFibra = parseFloat(fibraGoalInput.value) || 0;
+        vitcGoalInput.value = goalVitC = parseFloat(vitcGoalInput.value) || 0;
+        hierroGoalInput.value = goalHierro = parseFloat(hierroGoalInput.value) || 0;
+        calcioGoalInput.value = goalCalcio = parseFloat(calcioGoalInput.value) || 0;
+        limitAGS = parseFloat(agsLimitInput.value) || 0;
+        limitColesterol = parseFloat(colesterolLimitInput.value) || 0;
+        limitSodio = parseFloat(sodioLimitInput.value) || 0;
+    }
+
+    function getMacroAdequacyInfo(macroKey) {
+        const cfg = macroState[macroKey];
+        const consumedGrams = macroKey === 'carb' ? totalHco : (macroKey === 'protein' ? totalProteinas : totalLipidos);
+        const factor = KCAL_PER_G[macroKey === 'carb' ? 'hco' : (macroKey === 'protein' ? 'proteinas' : 'lipidos')];
+        const consumedKcal = consumedGrams * factor;
+        const consumedPercent = targetGET > 0 ? (consumedKcal / targetGET) * 100 : 0;
+        const weight = parseFloat(patientWeightInput?.value) || 0;
+
+        let targetDesc = "";
+        let statusText = "N/A";
+        let statusClass = "adequacy-na";
+
+        if (cfg.unit === 'percent') {
+            if (cfg.mode === 'range') {
+                targetDesc = `${cfg.min} - ${cfg.max}%`;
+                if (targetGET > 0) {
+                    if (consumedPercent >= cfg.min && consumedPercent <= cfg.max) {
+                        statusText = `En Rango (${Math.round(consumedPercent)}%)`;
+                        statusClass = "adequacy-ok";
+                    } else if (consumedPercent < cfg.min) {
+                        statusText = `Bajo (${Math.round(consumedPercent)}%)`;
+                        statusClass = "adequacy-low";
+                    } else {
+                        statusText = `Alto (${Math.round(consumedPercent)}%)`;
+                        statusClass = "adequacy-high";
+                    }
+                }
+            } else {
+                targetDesc = `${cfg.val}%`;
+                if (targetGET > 0 && cfg.val > 0) {
+                    const ratio = (consumedPercent / cfg.val) * 100;
+                    if (ratio >= 90 && ratio <= 110) {
+                        statusText = `${Math.round(ratio)}% (Adecuado)`;
+                        statusClass = "adequacy-ok";
+                    } else if (ratio < 90) {
+                        statusText = `${Math.round(ratio)}% (Bajo)`;
+                        statusClass = "adequacy-low";
+                    } else {
+                        statusText = `${Math.round(ratio)}% (Alto)`;
+                        statusClass = "adequacy-high";
+                    }
+                }
+            }
+        } else {
+            const mult = (cfg.unit === 'g_kg' && weight > 0) ? weight : 1;
+            const unitLabel = cfg.unit === 'g_kg' ? 'g/kg' : 'g';
+            const valG = cfg.val * mult;
+            const minG = cfg.min * mult;
+            const maxG = cfg.max * mult;
+
+            if (cfg.mode === 'gte') {
+                targetDesc = cfg.unit === 'g_kg' ? `≥ ${cfg.val} g/kg (${valG.toFixed(1)}g)` : `≥ ${valG.toFixed(1)}g`;
+                if (valG > 0) {
+                    const ratio = (consumedGrams / valG) * 100;
+                    if (consumedGrams >= valG) {
+                        statusText = `Cumple (${Math.round(ratio)}%)`;
+                        statusClass = "adequacy-ok";
+                    } else {
+                        statusText = `Insuficiente (${Math.round(ratio)}%)`;
+                        statusClass = "adequacy-low";
+                    }
+                }
+            } else if (cfg.mode === 'lte') {
+                targetDesc = cfg.unit === 'g_kg' ? `≤ ${cfg.val} g/kg (${valG.toFixed(1)}g)` : `≤ ${valG.toFixed(1)}g`;
+                if (valG > 0) {
+                    const ratio = (consumedGrams / valG) * 100;
+                    if (consumedGrams <= valG) {
+                        statusText = `Cumple (≤${valG.toFixed(0)}g)`;
+                        statusClass = "adequacy-ok";
+                    } else {
+                        statusText = `Exceso (${Math.round(ratio)}%)`;
+                        statusClass = "adequacy-high";
+                    }
+                }
+            } else if (cfg.mode === 'range') {
+                targetDesc = cfg.unit === 'g_kg' ? `${cfg.min}-${cfg.max} g/kg (${minG.toFixed(0)}-${maxG.toFixed(0)}g)` : `${minG.toFixed(1)} - ${maxG.toFixed(1)}g`;
+                if (consumedGrams >= minG && consumedGrams <= maxG) {
+                    statusText = `En Rango`;
+                    statusClass = "adequacy-ok";
+                } else if (consumedGrams < minG) {
+                    statusText = `Bajo (<${minG.toFixed(0)}g)`;
+                    statusClass = "adequacy-low";
+                } else {
+                    statusText = `Alto (>${maxG.toFixed(0)}g)`;
+                    statusClass = "adequacy-high";
+                }
+            } else {
+                targetDesc = cfg.unit === 'g_kg' ? `≈ ${cfg.val} g/kg (${valG.toFixed(1)}g)` : `≈ ${valG.toFixed(1)}g`;
+                if (valG > 0) {
+                    const ratio = (consumedGrams / valG) * 100;
+                    if (ratio >= 90 && ratio <= 110) {
+                        statusText = `${Math.round(ratio)}% (Adecuado)`;
+                        statusClass = "adequacy-ok";
+                    } else if (ratio < 90) {
+                        statusText = `${Math.round(ratio)}% (Bajo)`;
+                        statusClass = "adequacy-low";
+                    } else {
+                        statusText = `${Math.round(ratio)}% (Alto)`;
+                        statusClass = "adequacy-high";
+                    }
+                }
+            }
+        }
+
+        return { targetDesc, statusText, statusClass, consumedGrams, consumedPercent };
     }
 
     function updateMacroAdequacyView() {
-        const getAdequacy = (consumed, target) => {
-            if (target <= 0) return { percent: "N/A", class: "adequacy-na" };
-            const percentage = (consumed / target) * 100;
-            let adequacyClass = percentage < 90 ? "adequacy-low" : percentage > 110 ? "adequacy-high" : "adequacy-ok";
-            return { percent: `${Math.round(percentage)}%`, class: adequacyClass };
-        };
-        const adequacies = { Calorias: getAdequacy(totalCalorias, targetGET), Proteinas: getAdequacy(totalProteinas, targetProteinGrams), Carbos: getAdequacy(totalHco, targetCarbGrams), Grasas: getAdequacy(totalLipidos, targetFatGrams) };
-        Object.keys(adequacies).forEach(key => {
-            const span = document.getElementById(`adequacy-${key.toLowerCase()}`);
-            span.textContent = adequacies[key].percent;
-            span.className = "adequacy-percent " + adequacies[key].class;
-        });
+        const calRatio = targetGET > 0 ? (totalCalorias / targetGET) * 100 : 0;
+        const calClass = calRatio < 90 ? "adequacy-low" : calRatio > 110 ? "adequacy-high" : "adequacy-ok";
+        adequacyCaloriasSpan.textContent = targetGET > 0 ? `${Math.round(calRatio)}%` : "N/A";
+        adequacyCaloriasSpan.className = `adequacy-percent ${targetGET > 0 ? calClass : "adequacy-na"}`;
+        targetCaloriasValSpan.textContent = `${Math.round(totalCalorias)} / ${Math.round(targetGET)} kcal`;
+
+        const pInfo = getMacroAdequacyInfo('protein');
+        targetProteinasValSpan.textContent = `${totalProteinas.toFixed(1)}g / ${pInfo.targetDesc}`;
+        adequacyProteinasSpan.textContent = pInfo.statusText;
+        adequacyProteinasSpan.className = `adequacy-percent ${pInfo.statusClass}`;
+
+        const cInfo = getMacroAdequacyInfo('carb');
+        targetCarbosValSpan.textContent = `${totalHco.toFixed(1)}g / ${cInfo.targetDesc}`;
+        adequacyCarbosSpan.textContent = cInfo.statusText;
+        adequacyCarbosSpan.className = `adequacy-percent ${cInfo.statusClass}`;
+
+        const gInfo = getMacroAdequacyInfo('fat');
+        targetGrasasValSpan.textContent = `${totalLipidos.toFixed(1)}g / ${gInfo.targetDesc}`;
+        adequacyGrasasSpan.textContent = gInfo.statusText;
+        adequacyGrasasSpan.className = `adequacy-percent ${gInfo.statusClass}`;
     }
 
-    function updateAllTargetsAndProgress() { calculateAndUpdateTargets(); readNutrientGoals(); updateMacroAdequacyView(); updateSpecificNutrientProgressView(); }
+    function updateAllTargetsAndProgress() {
+        calculateAndUpdateTargets();
+        readNutrientGoals();
+        updateMacroAdequacyView();
+        updateSpecificNutrientProgressView();
+    }
     
     function handleAddFood() {
         clearError();
@@ -818,7 +1461,28 @@ document.addEventListener('DOMContentLoaded', () => {
         doc.text("Formula Desarrollada - Alimentos Añadidos", 14, 15);
         const tableColumn = ["Alimento", "g", "Hc", "P", "G", "Fib", "Col", "Sat", "Sod", "VitC", "Fe", "Ca"];
         const tableRows = additionHistory.map(item => [ item.nombre, item.cantidad.toFixed(1), item.hco.toFixed(1), item.proteinas.toFixed(1), item.lipidos.toFixed(1), item.fibra.toFixed(1), Math.round(item.colesterol), item.ags.toFixed(1), Math.round(item.sodio), item.vit_c.toFixed(1), item.hierro.toFixed(1), Math.round(item.calcio) ]);
-        doc.autoTable({ head: [tableColumn], body: tableRows, startY: 25 });
+        const totalGramsAll = additionHistory.reduce((sum, item) => sum + item.cantidad, 0);
+        const tableFoot = [
+            "TOTALES",
+            totalGramsAll.toFixed(1),
+            totalHco.toFixed(1),
+            totalProteinas.toFixed(1),
+            totalLipidos.toFixed(1),
+            totalFibra.toFixed(1),
+            Math.round(totalColesterol).toString(),
+            totalAGS.toFixed(1),
+            Math.round(totalSodio).toString(),
+            totalVitC.toFixed(1),
+            totalHierro.toFixed(1),
+            Math.round(totalCalcio).toString()
+        ];
+        doc.autoTable({
+            head: [tableColumn],
+            body: tableRows,
+            foot: [tableFoot],
+            startY: 25,
+            footStyles: { fillColor: [44, 62, 80], textColor: [255, 255, 255], fontStyle: 'bold' }
+        });
         doc.save('formula_desarrollada.pdf');
     }
     
@@ -867,10 +1531,17 @@ document.addEventListener('DOMContentLoaded', () => {
             startY = addText(planPurposeInput ? planPurposeInput.value : "N/A", margin, startY, usableWidth);
             
             addTitle("2) Gasto Energético Total (GET)"); 
-            startY = addText(`GET: ${tdeeInput ? tdeeInput.value : 'N/A'} kcal`, margin, startY, usableWidth);
+            const weightVal = patientWeightInput && patientWeightInput.value ? ` | Peso: ${patientWeightInput.value} kg` : '';
+            startY = addText(`GET: ${tdeeInput ? tdeeInput.value : 'N/A'} kcal${weightVal}`, margin, startY, usableWidth);
             
             addTitle("3) Requerimiento Macronutrientes (AMDR)"); 
-            startY = addTable({ html: '.amdr-results-table', theme: 'grid', headStyles: headStyle, styles: { fontSize: tableFontSize }, margin: { left: margin, right: margin } });
+            const amdrHead = [['Macronutrientes', 'Criterio / Unidad', 'Objetivo', 'Calorías (kcal)', 'Gramos (g)']];
+            const amdrBody = [
+                ['Carbohidratos (HC)', amdrHcUnitSpan?.textContent || '% del GET', amdrHcTargetSpan?.textContent || '', amdrHcCaloriesSpan?.textContent || '', amdrHcGramsSpan?.textContent || ''],
+                ['Proteínas (P)', amdrPUnitSpan?.textContent || '% del GET', amdrPTargetSpan?.textContent || '', amdrPCaloriesSpan?.textContent || '', amdrPGramsSpan?.textContent || ''],
+                ['Grasas (G)', amdrGUnitSpan?.textContent || '% del GET', amdrGTargetSpan?.textContent || '', amdrGCaloriesSpan?.textContent || '', amdrGGramsSpan?.textContent || '']
+            ];
+            startY = addTable({ head: amdrHead, body: amdrBody, theme: 'grid', headStyles: headStyle, styles: { fontSize: tableFontSize }, margin: { left: margin, right: margin } });
             
             addTitle("4) Micronutrientes / Límites (Objetivo vs Consumido)"); 
             const microBody = [
@@ -904,20 +1575,25 @@ document.addEventListener('DOMContentLoaded', () => {
             addTitle("7) Fórmula Desarrollada"); 
             const foodHead = [["Alimento", "g", "Hc", "P", "G", "Fib", "Col", "Sat", "Sod", "VitC", "Fe", "Ca"]]; 
             const foodBody = additionHistory.map(item => [item.nombre, item.cantidad.toFixed(1), item.hco.toFixed(1), item.proteinas.toFixed(1), item.lipidos.toFixed(1), item.fibra.toFixed(1), Math.round(item.colesterol), item.ags.toFixed(1), Math.round(item.sodio), item.vit_c.toFixed(1), item.hierro.toFixed(1), Math.round(item.calcio)]); 
-            startY = addTable({ head: foodHead, body: foodBody, theme: 'grid', styles: { fontSize: smallFontSize, cellPadding: 1.2 }, headStyles: headStyle, columnStyles: { 0: { cellWidth: 'auto'} }, margin: { left: margin, right: margin } });
+            const totalGramsAll = additionHistory.reduce((sum, item) => sum + item.cantidad, 0);
+            const foodFoot = [["TOTALES", totalGramsAll.toFixed(1), totalHco.toFixed(1), totalProteinas.toFixed(1), totalLipidos.toFixed(1), totalFibra.toFixed(1), Math.round(totalColesterol).toString(), totalAGS.toFixed(1), Math.round(totalSodio).toString(), totalVitC.toFixed(1), totalHierro.toFixed(1), Math.round(totalCalcio).toString()]];
+            startY = addTable({ head: foodHead, body: foodBody, foot: foodFoot, theme: 'grid', styles: { fontSize: smallFontSize, cellPadding: 1.2 }, headStyles: headStyle, footStyles: { fillColor: [44, 62, 80], textColor: [255, 255, 255], fontStyle: 'bold' }, columnStyles: { 0: { cellWidth: 'auto'} }, margin: { left: margin, right: margin } });
             
             addTitle("Resumen Total Diario"); 
             const summaryBody = [['Carbohidratos (g)', totalHco.toFixed(1)], ['Proteínas (g)', totalProteinas.toFixed(1)], ['Lípidos (g)', totalLipidos.toFixed(1)], ['Calorías (kcal)', Math.round(totalCalorias)]]; 
             startY = addTable({ head: [['Nutriente', 'Total Consumido']], body: summaryBody, theme: 'grid', headStyles: { fillColor: summaryHeaderBgColor, textColor: summaryHeaderTextColor }, columnStyles: { 0: { fontStyle: 'bold'} }, margin: { left: margin, right: margin } });
             
             addTitle("Adecuación vs. Objetivos"); 
+            const pInfo = getMacroAdequacyInfo('protein');
+            const cInfo = getMacroAdequacyInfo('carb');
+            const gInfo = getMacroAdequacyInfo('fat');
             const adequacyBody = [
-                ['Calorías (kcal)', Math.round(targetGET), adequacyCaloriasSpan?.textContent || "N/A"], 
-                ['Proteínas (g)', targetProteinGrams.toFixed(1), adequacyProteinasSpan?.textContent || "N/A"], 
-                ['Carbohidratos (g)', targetCarbGrams.toFixed(1), adequacyCarbosSpan?.textContent || "N/A"], 
-                ['Grasas (g)', targetFatGrams.toFixed(1), adequacyGrasasSpan?.textContent || "N/A"]
+                ['Calorías (kcal)', targetGET > 0 ? `${Math.round(targetGET)} kcal` : "N/A", adequacyCaloriasSpan?.textContent || "N/A"], 
+                ['Proteínas (P)', pInfo.targetDesc, adequacyProteinasSpan?.textContent || "N/A"], 
+                ['Carbohidratos (HC)', cInfo.targetDesc, adequacyCarbosSpan?.textContent || "N/A"], 
+                ['Grasas (G)', gInfo.targetDesc, adequacyGrasasSpan?.textContent || "N/A"]
             ]; 
-            startY = addTable({ head: [['Nutriente', 'Objetivo', 'Adecuación (%)']], body: adequacyBody, theme: 'grid', headStyles: { fillColor: [204, 229, 255], textColor: [0, 64, 133] }, columnStyles: { 0: { fontStyle: 'bold'} }, margin: { left: margin, right: margin } });
+            startY = addTable({ head: [['Nutriente', 'Objetivo Configurado', 'Adecuación / Estado']], body: adequacyBody, theme: 'grid', headStyles: { fillColor: [204, 229, 255], textColor: [0, 64, 133] }, columnStyles: { 0: { fontStyle: 'bold'} }, margin: { left: margin, right: margin } });
             
             addTitle("8) Plan de Menú");
             const textBlockWidth = usableWidth * 0.65; const imageBlockX = margin + textBlockWidth + 5; const imageBlockWidth = usableWidth - textBlockWidth - 5; const maxImageHeight = 45;
@@ -955,6 +1631,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- INICIALIZACIÓN ---
     cacheDOMElements();
     populateFoodDatalist();
+    setupMacroControls();
     
     fibraGoalInput.value = goalFibra; vitcGoalInput.value = goalVitC; hierroGoalInput.value = goalHierro; calcioGoalInput.value = goalCalcio;
     agsLimitInput.value = limitAGS; colesterolLimitInput.value = limitColesterol; sodioLimitInput.value = limitSodio;
@@ -966,7 +1643,7 @@ document.addEventListener('DOMContentLoaded', () => {
     undoButton.addEventListener('click', handleUndo);
     printPdfButton.addEventListener('click', handlePrintPdf);
     saveAllPdfButton.addEventListener('click', handleSaveAllPdf);
-    const inputsToUpdate = [tdeeInput, proteinPercentInput, carbPercentInput, fatPercentInput, fibraGoalInput, vitcGoalInput, hierroGoalInput, calcioGoalInput, sodioLimitInput, colesterolLimitInput, agsLimitInput];
+    const inputsToUpdate = [tdeeInput, patientWeightInput, fibraGoalInput, vitcGoalInput, hierroGoalInput, calcioGoalInput, sodioLimitInput, colesterolLimitInput, agsLimitInput].filter(Boolean);
     inputsToUpdate.forEach(input => input.addEventListener('input', updateAllTargetsAndProgress));
     
     detailedListBody.addEventListener('click', (e) => {
