@@ -673,6 +673,7 @@ select:focus, input:focus, textarea:focus { border-color: var(--accent-orange); 
         <div class="wizard-step">
             <div class="goal-setting">
                 <div class="section-title-styled">7) Formula Desarrollada</div>
+                <div id="step7-error-message" class="error-msg-local" style="display:none; color: #f87171; background-color: rgba(220, 38, 38, 0.15); border: 1px solid rgba(220, 38, 38, 0.3); padding: 8px 12px; border-radius: 6px; margin-bottom: 12px; font-size: 0.9em;"></div>
                 <div><label for="food-input">Busca y selecciona un Alimento:</label><input type="text" id="food-input" list="food-datalist" placeholder="Escribe para buscar..."><datalist id="food-datalist"></datalist></div>
                 <div><label for="quantity-input">Cantidad (en gramos):</label><input type="number" id="quantity-input" min="0.1" step="0.1" placeholder="Ej: 150"></div>
                 <div id="meal-type-container"><label for="meal-type-select">Tipo de Comida:</label><select id="meal-type-select"><option value="">-- Elige --</option><option value="Desayuno">Desayuno</option><option value="Colación">Colación</option><option value="Almuerzo">Almuerzo</option><option value="Merienda">Merienda</option><option value="Cena">Cena</option></select></div>
@@ -799,6 +800,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let totalHco = 0, totalProteinas = 0, totalLipidos = 0, totalCalorias = 0,
         totalFibra = 0, totalVitC = 0, totalHierro = 0, totalCalcio = 0,
         totalAGS = 0, totalColesterol = 0, totalSodio = 0;
+    let targetGET = 0, targetProteinPercent = 0, targetCarbPercent = 0, targetFatPercent = 0;
+    let targetProteinGrams = 0, targetCarbGrams = 0, targetFatGrams = 0;
+    let goalFibra = 25, goalVitC = 75, goalHierro = 18, goalCalcio = 1000,
+        limitAGS = 20, limitColesterol = 300, limitSodio = 2300;
+    let mealImages = {};
+    mealTypes.forEach(type => mealImages[type] = null);
     const macroState = {
         carb: { unit: 'percent', mode: 'range', min: 50, max: 60, val: 55 },
         protein: { unit: 'percent', mode: 'range', min: 10, max: 20, val: 15 },
@@ -1057,8 +1064,22 @@ document.addEventListener('DOMContentLoaded', () => {
         updateProgress(progressBarSodio, progressTextSodio, totalSodio, limitSodio, 'mg', true, 0);
     }
 
-    function displayError(message) { errorMessageDiv.textContent = message; }
-    function clearError() { errorMessageDiv.textContent = ""; }
+    function displayError(message) {
+        if (errorMessageDiv) errorMessageDiv.textContent = message;
+        const localError = document.getElementById('step7-error-message');
+        if (localError) {
+            localError.textContent = message;
+            localError.style.display = message ? 'block' : 'none';
+        }
+    }
+    function clearError() {
+        if (errorMessageDiv) errorMessageDiv.textContent = "";
+        const localError = document.getElementById('step7-error-message');
+        if (localError) {
+            localError.textContent = "";
+            localError.style.display = 'none';
+        }
+    }
     function updateUndoButtonState() { undoButton.disabled = additionHistory.length === 0; }
     
     function updateSimpleMealListsView() {
@@ -1360,12 +1381,19 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleAddFood() {
         clearError();
         const foodName = foodInput.value.trim(); const quantity = parseFloat(quantityInput.value); const mealType = mealTypeSelect.value;
-        if (!foodName || isNaN(quantity) || quantity <= 0 || !mealType) { displayError("Por favor, completa todos los campos."); return; }
-        const foodData = alimentos.find(f => f.nombre === foodName);
-        if (!foodData) { displayError(`Alimento "${foodName}" no encontrado.`); return; }
+        if (!foodName || isNaN(quantity) || quantity <= 0 || !mealType) {
+            displayError("Por favor, completa todos los campos (alimento, cantidad válida en gramos y tipo de comida).");
+            return;
+        }
+        const foodNameLower = foodName.toLowerCase();
+        const foodData = alimentos.find(f => f.nombre.toLowerCase().trim() === foodNameLower) || alimentos.find(f => f.nombre === foodName);
+        if (!foodData) {
+            displayError(`Alimento "${foodName}" no encontrado en la base de datos.`);
+            return;
+        }
         const factor = quantity / 100;
         const addedItem = {
-            nombre: foodName, cantidad: quantity, comida: mealType,
+            nombre: foodData.nombre, cantidad: quantity, comida: mealType,
             hco: (foodData.hco || 0) * factor, proteinas: (foodData.proteinas || 0) * factor, lipidos: (foodData.lipidos || 0) * factor,
             fibra: (foodData.fibra || 0) * factor, vit_c: (foodData.vit_c || 0) * factor, hierro: (foodData.hierro || 0) * factor,
             calcio: (foodData.calcio || 0) * factor, ags: (foodData.ags || 0) * factor, colesterol: (foodData.colesterol || 0) * factor,
