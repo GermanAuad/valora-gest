@@ -140,6 +140,11 @@ select, input, textarea {
     background-color: var(--glass-bg-darker); color: var(--text-light);
     font-family: 'Poppins', sans-serif; font-size: 0.95em;
 }
+select option, .macro-row select option {
+    background-color: #1a1a24 !important;
+    color: #ffffff !important;
+    padding: 10px;
+}
 select:focus, input:focus, textarea:focus { border-color: var(--accent-orange); box-shadow: 0 0 0 3px rgba(232, 122, 61, 0.4); outline: none; }
 .section-title-styled { background-color: rgba(232, 122, 61, 0.1); border-left: 5px solid var(--accent-orange); padding: 12px 18px; margin-bottom: 20px; font-size: 1.25em; color: var(--accent-orange); font-weight: 600; border-radius: 0 6px 6px 0; }
 .goal-setting, .info-section { border-top: 1px dashed var(--glass-border); padding-top: 20px; margin-top: 20px; }
@@ -305,6 +310,40 @@ select:focus, input:focus, textarea:focus { border-color: var(--accent-orange); 
     font-weight: 700;
     font-size: 0.95em;
     padding: 10px 8px;
+}
+.r24-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+    margin-bottom: 22px;
+    font-size: 0.88em;
+}
+.r24-table th, .r24-table td {
+    border: 1px solid var(--glass-border);
+    padding: 8px 10px;
+    text-align: center;
+}
+.r24-table th {
+    background-color: var(--glass-bg-darker);
+    color: var(--accent-teal);
+    font-weight: 600;
+}
+.r24-table td:first-child {
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-light);
+}
+.diag-adecuado {
+    color: #4ade80 !important;
+    font-weight: 600;
+}
+.diag-deficit {
+    color: #fbbf24 !important;
+    font-weight: 600;
+}
+.diag-exceso {
+    color: #f87171 !important;
+    font-weight: 600;
 }
     </style>
     <!-- === FIN DEL CSS EMBEBIDO (de style.css) === -->
@@ -682,6 +721,52 @@ select:focus, input:focus, textarea:focus { border-color: var(--accent-orange); 
                     <button id="undo-button" disabled>Deshacer Último Añadido</button>
                 </div>
                 <div id="detailed-list-container"><div class="detailed-list-header"><h4>Alimentos Añadidos</h4><div class="header-buttons"><button id="print-pdf-button">Imprimir Lista</button><button class="expand-toggle" id="detailed-list-toggle" data-target-list="detailed-table-wrapper" aria-expanded="false" aria-controls="detailed-table-wrapper" title="Expandir/Colapsar lista">⊞</button></div></div><div id="detailed-table-wrapper"><table id="detailed-food-table"><thead><tr><th>Alimento</th><th>gramos</th><th>Hc</th><th>P</th><th>G</th><th>Fibra</th><th>Colest</th><th>G.Sat</th><th>Sodio</th><th>Vit C</th><th>Hierro</th><th>Calcio</th><th class="actions-column">Acciones</th></tr></thead><tbody id="detailed-food-list-body"><tr class="empty-message-row"><td colspan="13">Aún no hay alimentos añadidos.</td></tr></tbody><tfoot id="detailed-food-table-foot" style="display:none;"><tr class="total-row"><th>TOTALES</th><th id="total-col-g">0.0</th><th id="total-col-hc">0.0</th><th id="total-col-p">0.0</th><th id="total-col-g-lip">0.0</th><th id="total-col-fib">0.0</th><th id="total-col-col">0</th><th id="total-col-sat">0.0</th><th id="total-col-sod">0</th><th id="total-col-vitc">0.0</th><th id="total-col-fe">0.0</th><th id="total-col-ca">0</th><th>—</th></tr></tfoot></table></div></div>
+
+                <!-- Análisis de Variables Alimentarias: Recordatorio de 24 Horas -->
+                <div id="r24h-tables-wrapper" style="margin-top: 25px; border-top: 1px dashed var(--glass-border); padding-top: 20px;">
+                    <div class="section-title-styled" style="font-size: 1.1em; margin-bottom: 12px;">
+                        Análisis de Variables Alimentarias: Recordatorio de 24 Horas (0,75 Pts)
+                    </div>
+
+                    <h4 style="color: var(--accent-orange); margin: 12px 0 6px 0;">
+                        1. Nutrientes promedio ingeridos en 24 hs por el paciente
+                    </h4>
+                    <div style="overflow-x: auto;">
+                        <table class="r24-table" id="r24h-table-ingeridos">
+                            <thead>
+                                <tr>
+                                    <th>Nutrientes / Variables</th>
+                                    <th>Unidades (g / mg)</th>
+                                    <th>Kcal</th>
+                                    <th>% VCT</th>
+                                    <th>Diagnóstico de Adecuación (Adecuado / Déficit / Exceso)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="r24h-tbody-ingeridos">
+                                <tr><td colspan="5" style="text-align: center; color: var(--text-muted-light);">Carga alimentos para ver el análisis.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h4 style="color: var(--accent-teal); margin: 18px 0 6px 0;">
+                        2. Valores normales / recomendados para el paciente de este caso
+                    </h4>
+                    <div style="overflow-x: auto;">
+                        <table class="r24-table" id="r24h-table-recomendados">
+                            <thead>
+                                <tr>
+                                    <th>Macronutrientes / Variables</th>
+                                    <th>Unidades (g / mg)</th>
+                                    <th>Kcal</th>
+                                    <th>%</th>
+                                </tr>
+                            </thead>
+                            <tbody id="r24h-tbody-recomendados">
+                                <!-- Generado dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -1371,11 +1456,132 @@ document.addEventListener('DOMContentLoaded', () => {
         adequacyGrasasSpan.className = `adequacy-percent ${gInfo.statusClass}`;
     }
 
+    function getR24IngeridosData() {
+        const calKcal = Math.round(totalCalorias);
+        let diagVCT = "—";
+        if (targetGET > 0) {
+            const ratio = (totalCalorias / targetGET) * 100;
+            if (ratio >= 90 && ratio <= 110) diagVCT = `Adecuado (${Math.round(ratio)}%)`;
+            else if (ratio < 90) diagVCT = `Déficit (${Math.round(ratio)}%)`;
+            else diagVCT = `Exceso (${Math.round(ratio)}%)`;
+        }
+
+        const pctHc = totalCalorias > 0 ? ((totalHco * 4 / totalCalorias) * 100).toFixed(1) : "0.0";
+        const pctP = totalCalorias > 0 ? ((totalProteinas * 4 / totalCalorias) * 100).toFixed(1) : "0.0";
+        const pctG = totalCalorias > 0 ? ((totalLipidos * 9 / totalCalorias) * 100).toFixed(1) : "0.0";
+        const pctAgs = totalCalorias > 0 ? ((totalAGS * 9 / totalCalorias) * 100).toFixed(1) : "0.0";
+
+        const cInfo = getMacroAdequacyInfo('carb');
+        const pInfo = getMacroAdequacyInfo('protein');
+        const gInfo = getMacroAdequacyInfo('fat');
+
+        const mapDiag = (info) => {
+            let label = "—";
+            if (info.statusClass === 'adequacy-ok') label = "Adecuado";
+            else if (info.statusClass === 'adequacy-low') label = "Déficit";
+            else if (info.statusClass === 'adequacy-high') label = "Exceso";
+            else return "—";
+
+            let detail = (info.statusText || "")
+                .replace(/^Bajo\s*/i, '')
+                .replace(/^Alto\s*/i, '')
+                .replace(/^Adecuado\s*/i, '')
+                .trim();
+            if (detail.startsWith('(') && detail.endsWith(')')) {
+                detail = detail.substring(1, detail.length - 1);
+            }
+            return detail ? `${label} (${detail})` : label;
+        };
+
+        let diagAgs = "—";
+        if (limitAGS > 0) {
+            diagAgs = (totalAGS <= limitAGS) ? `Adecuado (≤ ${limitAGS} g)` : `Exceso (${totalAGS.toFixed(1)} g)`;
+        }
+
+        let diagFibra = "—";
+        if (goalFibra > 0) {
+            diagFibra = (totalFibra >= goalFibra) ? `Adecuado (≥ ${goalFibra} g)` : `Déficit (${totalFibra.toFixed(1)} g)`;
+        }
+
+        let diagSodio = "—";
+        if (limitSodio > 0) {
+            diagSodio = (totalSodio <= limitSodio) ? `Adecuado (≤ ${Math.round(limitSodio)} mg)` : `Exceso (${Math.round(totalSodio)} mg)`;
+        }
+
+        return [
+            ["Energía Total (VCT)", "—", `${calKcal} kcal`, "100 %", diagVCT],
+            ["HC", `${totalHco.toFixed(1)} g`, `${Math.round(totalHco * 4)} kcal`, `${pctHc} %`, mapDiag(cInfo)],
+            ["P", `${totalProteinas.toFixed(1)} g`, `${Math.round(totalProteinas * 4)} kcal`, `${pctP} %`, mapDiag(pInfo)],
+            ["G", `${totalLipidos.toFixed(1)} g`, `${Math.round(totalLipidos * 9)} kcal`, `${pctG} %`, mapDiag(gInfo)],
+            ["AGS", `${totalAGS.toFixed(1)} g`, `${Math.round(totalAGS * 9)} kcal`, `${pctAgs} %`, diagAgs],
+            ["Fibra dietaria", `${totalFibra.toFixed(1)} g`, "—", "—", diagFibra],
+            ["Sodio (Na)", `${Math.round(totalSodio)} mg`, "—", "—", diagSodio]
+        ];
+    }
+
+    function getR24RecomendadosData() {
+        const hcGrams = amdrHcGramsSpan?.textContent || "—";
+        const hcKcal = amdrHcCaloriesSpan?.textContent || "—";
+        const hcPct = amdrHcTargetSpan?.textContent || "—";
+
+        const pGrams = amdrPGramsSpan?.textContent || "—";
+        const pKcal = amdrPCaloriesSpan?.textContent || "—";
+        const pPct = amdrPTargetSpan?.textContent || "—";
+
+        const gGrams = amdrGGramsSpan?.textContent || "—";
+        const gKcal = amdrGCaloriesSpan?.textContent || "—";
+        const gPct = amdrGTargetSpan?.textContent || "—";
+
+        const agsPct = targetGET > 0 ? `≤ ${Math.round(((limitAGS || 20) * 9 / targetGET) * 100)} %` : "< 7 - 10 %";
+
+        return [
+            ["Energía Total (VCT)", "—", targetGET > 0 ? `${Math.round(targetGET)} kcal` : "—", "100 %"],
+            ["HC", hcGrams, hcKcal, hcPct],
+            ["P", pGrams, pKcal, pPct],
+            ["G", gGrams, gKcal, gPct],
+            ["AGS", `≤ ${limitAGS || 20} g`, `≤ ${Math.round((limitAGS || 20) * 9)} kcal`, agsPct],
+            ["Fibra dietaria", `≥ ${goalFibra || 25} g`, "—", "—"],
+            ["Sodio (Na)", `≤ ${Math.round(limitSodio || 2300)} mg`, "—", "—"]
+        ];
+    }
+
+    function updateRecordatorio24hTables() {
+        const tbodyIngeridos = document.getElementById('r24h-tbody-ingeridos');
+        const tbodyRecomendados = document.getElementById('r24h-tbody-recomendados');
+        if (!tbodyIngeridos || !tbodyRecomendados) return;
+
+        const ingeridos = getR24IngeridosData();
+        tbodyIngeridos.innerHTML = ingeridos.map(row => {
+            const diagText = row[4];
+            let diagClass = "";
+            if (diagText.startsWith("Adecuado")) diagClass = "diag-adecuado";
+            else if (diagText.startsWith("Déficit")) diagClass = "diag-deficit";
+            else if (diagText.startsWith("Exceso")) diagClass = "diag-exceso";
+
+            return `<tr>
+                <td><strong>${row[0]}</strong></td>
+                <td>${row[1]}</td>
+                <td>${row[2]}</td>
+                <td>${row[3]}</td>
+                <td class="${diagClass}">${row[4]}</td>
+            </tr>`;
+        }).join("");
+
+        const recomendados = getR24RecomendadosData();
+        tbodyRecomendados.innerHTML = recomendados.map(row => `<tr>
+            <td><strong>${row[0]}</strong></td>
+            <td>${row[1]}</td>
+            <td>${row[2]}</td>
+            <td>${row[3]}</td>
+        </tr>`).join("");
+    }
+
     function updateAllTargetsAndProgress() {
         calculateAndUpdateTargets();
         readNutrientGoals();
         updateMacroAdequacyView();
         updateSpecificNutrientProgressView();
+        updateRecordatorio24hTables();
     }
     
     function handleAddFood() {
@@ -1406,6 +1612,7 @@ document.addEventListener('DOMContentLoaded', () => {
         totalAGS += addedItem.ags; totalColesterol += addedItem.colesterol; totalSodio += addedItem.sodio;
         updateConsumedSummaryView(); updateMacroAdequacyView(); updateSpecificNutrientProgressView();
         updateSimpleMealListsView(); updateDetailedFoodList(); updateUndoButtonState();
+        updateRecordatorio24hTables();
         foodInput.value = ""; quantityInput.value = ""; mealTypeSelect.value = ""; foodInput.focus();
     }
 
@@ -1417,6 +1624,7 @@ document.addEventListener('DOMContentLoaded', () => {
             totalAGS -= lastItem.ags; totalColesterol -= lastItem.colesterol; totalSodio -= lastItem.sodio;
             updateConsumedSummaryView(); updateMacroAdequacyView(); updateSpecificNutrientProgressView();
             updateSimpleMealListsView(); updateDetailedFoodList(); updateUndoButtonState();
+            updateRecordatorio24hTables();
         }
     }
 
@@ -1443,6 +1651,7 @@ document.addEventListener('DOMContentLoaded', () => {
             totalAGS -= itemToRemove.ags; totalColesterol -= itemToRemove.colesterol; totalSodio -= itemToRemove.sodio;
             updateConsumedSummaryView(); updateMacroAdequacyView(); updateSpecificNutrientProgressView();
             updateSimpleMealListsView(); updateDetailedFoodList(); updateUndoButtonState();
+            updateRecordatorio24hTables();
         }
     }
     
@@ -1607,21 +1816,35 @@ document.addEventListener('DOMContentLoaded', () => {
             const foodFoot = [["TOTALES", totalGramsAll.toFixed(1), totalHco.toFixed(1), totalProteinas.toFixed(1), totalLipidos.toFixed(1), totalFibra.toFixed(1), Math.round(totalColesterol).toString(), totalAGS.toFixed(1), Math.round(totalSodio).toString(), totalVitC.toFixed(1), totalHierro.toFixed(1), Math.round(totalCalcio).toString()]];
             startY = addTable({ head: foodHead, body: foodBody, foot: foodFoot, theme: 'grid', styles: { fontSize: smallFontSize, cellPadding: 1.2 }, headStyles: headStyle, footStyles: { fillColor: [44, 62, 80], textColor: [255, 255, 255], fontStyle: 'bold' }, columnStyles: { 0: { cellWidth: 'auto'} }, margin: { left: margin, right: margin } });
             
-            addTitle("Resumen Total Diario"); 
-            const summaryBody = [['Carbohidratos (g)', totalHco.toFixed(1)], ['Proteínas (g)', totalProteinas.toFixed(1)], ['Lípidos (g)', totalLipidos.toFixed(1)], ['Calorías (kcal)', Math.round(totalCalorias)]]; 
-            startY = addTable({ head: [['Nutriente', 'Total Consumido']], body: summaryBody, theme: 'grid', headStyles: { fillColor: summaryHeaderBgColor, textColor: summaryHeaderTextColor }, columnStyles: { 0: { fontStyle: 'bold'} }, margin: { left: margin, right: margin } });
-            
-            addTitle("Adecuación vs. Objetivos"); 
-            const pInfo = getMacroAdequacyInfo('protein');
-            const cInfo = getMacroAdequacyInfo('carb');
-            const gInfo = getMacroAdequacyInfo('fat');
-            const adequacyBody = [
-                ['Calorías (kcal)', targetGET > 0 ? `${Math.round(targetGET)} kcal` : "N/A", adequacyCaloriasSpan?.textContent || "N/A"], 
-                ['Proteínas (P)', pInfo.targetDesc, adequacyProteinasSpan?.textContent || "N/A"], 
-                ['Carbohidratos (HC)', cInfo.targetDesc, adequacyCarbosSpan?.textContent || "N/A"], 
-                ['Grasas (G)', gInfo.targetDesc, adequacyGrasasSpan?.textContent || "N/A"]
-            ]; 
-            startY = addTable({ head: [['Nutriente', 'Objetivo Configurado', 'Adecuación / Estado']], body: adequacyBody, theme: 'grid', headStyles: { fillColor: [204, 229, 255], textColor: [0, 64, 133] }, columnStyles: { 0: { fontStyle: 'bold'} }, margin: { left: margin, right: margin } });
+            if (startY + 60 > pageHeight - margin) { doc.addPage(); startY = margin; }
+            addTitle("Análisis de Variables Alimentarias: Recordatorio de 24 Horas (0,75 Pts)");
+
+            startY = addText("1. Nutrientes promedio ingeridos en 24 hs por el paciente", margin, startY, usableWidth, 'bold', 10);
+            const r24IngHead = [["Nutrientes / Variables", "Unidades (g / mg)", "Kcal", "% VCT", "Diagnóstico de Adecuación (Adecuado / Déficit / Exceso)"]];
+            const r24IngBody = getR24IngeridosData();
+            startY = addTable({
+                head: r24IngHead,
+                body: r24IngBody,
+                theme: 'grid',
+                headStyles: { fillColor: summaryHeaderBgColor, textColor: summaryHeaderTextColor, fontStyle: 'bold' },
+                styles: { fontSize: smallFontSize, cellPadding: 1.5 },
+                columnStyles: { 0: { fontStyle: 'bold' } },
+                margin: { left: margin, right: margin }
+            });
+
+            if (startY + 45 > pageHeight - margin) { doc.addPage(); startY = margin; }
+            startY = addText("2. Valores normales / recomendados para el paciente de este caso", margin, startY, usableWidth, 'bold', 10);
+            const r24RecHead = [["Macronutrientes / Variables", "Unidades (g / mg)", "Kcal", "%"]];
+            const r24RecBody = getR24RecomendadosData();
+            startY = addTable({
+                head: r24RecHead,
+                body: r24RecBody,
+                theme: 'grid',
+                headStyles: { fillColor: [204, 229, 255], textColor: [0, 64, 133], fontStyle: 'bold' },
+                styles: { fontSize: smallFontSize, cellPadding: 1.5 },
+                columnStyles: { 0: { fontStyle: 'bold' } },
+                margin: { left: margin, right: margin }
+            });
             
             addTitle("8) Plan de Menú");
             const textBlockWidth = usableWidth * 0.65; const imageBlockX = margin + textBlockWidth + 5; const imageBlockWidth = usableWidth - textBlockWidth - 5; const maxImageHeight = 45;
